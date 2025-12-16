@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <title>Productos - Industria Gafra</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            gafraAccent: '#0ea5a4',
+                            gafraBlue: '#0b3b4c'
+                        },
+                        animation: {
+                            'fade-up': 'fadeUp 400ms ease-out'
+                        },
+                        keyframes: {
+                            fadeUp: {
+                                '0%': { opacity: '0', transform: 'translateY(8px)' },
+                                '100%': { opacity: '1', transform: 'translateY(0)' }
+                            }
+                        }
+                    }
+                }
+            }
+        </script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+</head>
+<body>
+        <header class="bg-gafraAccent shadow">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between py-3">
+                    <div class="flex items-center gap-4">
+                        <a href="/" class="flex items-center gap-3">
+                            <img src="/images/logo.svg" alt="Industria Gafra" class="w-10 h-10" />
+                            <span class="font-bold text-lg text-gafraBlue">Industria Gafra</span>
+                        </a>
+                        <div class="hidden md:block">
+                            <form id="searchForm" class="flex items-center bg-white rounded overflow-hidden">
+                                <input id="searchInput" type="text" placeholder="Buscar productos, marcas y más" class="px-3 py-2 w-80 focus:outline-none" />
+                                <button type="submit" class="bg-gafraBlue text-white px-4 py-2">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <nav class="flex items-center gap-4">
+                        <a href="/products" class="text-gafraBlue hover:underline">Productos</a>
+                        <a href="/quotes" class="text-gafraBlue hover:underline">Cotizaciones</a>
+                        <a href="/dashboard" class="text-gafraBlue hover:underline">Dashboard</a>
+                        <button id="loginBtn" class="bg-gafraBlue text-white px-3 py-1 rounded">Ingresar</button>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <script>
+            // Header behavior: show login or user based on token
+            (function(){
+                const token = localStorage.getItem('token');
+                const btn = document.getElementById('loginBtn');
+                if(!btn) return;
+                if(token){
+                    btn.textContent = 'Mi cuenta';
+                    btn.onclick = () => window.location.href = '/dashboard';
+                } else {
+                    btn.textContent = 'Ingresar';
+                    btn.onclick = () => window.location.href = '/login';
+                }
+
+                const form = document.getElementById('searchForm');
+                if(form){
+                    form.addEventListener('submit', function(e){
+                        e.preventDefault();
+                        const q = document.getElementById('searchInput').value.trim();
+                        if(q) window.location.href = '/products?search='+encodeURIComponent(q);
+                    });
+                }
+            })();
+        </script>
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+            <div>
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold">Productos</h1>
+            <button id="addProductBtn" class="bg-gafraBlue text-white px-4 py-2 rounded">Agregar producto</button>
+        </div>
+        <div id="productsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        
+        <!-- Add product modal -->
+        <div id="addModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+            <div class="bg-white rounded p-6 w-full max-w-md">
+                <h2 class="text-lg font-semibold mb-4">Agregar producto</h2>
+                <form id="addProductForm" class="space-y-3">
+                    <div><input name="name" placeholder="Nombre" required class="w-full border px-3 py-2 rounded"/></div>
+                    <div><input name="description" placeholder="Descripción" class="w-full border px-3 py-2 rounded"/></div>
+                    <div><input name="category" placeholder="Categoría" class="w-full border px-3 py-2 rounded"/></div>
+                    <div class="grid grid-cols-2 gap-3"><input name="price" type="number" step="0.01" placeholder="Precio" required class="w-full border px-3 py-2 rounded"/><input name="stock" type="number" placeholder="Stock" required class="w-full border px-3 py-2 rounded"/></div>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" id="cancelAdd" class="px-3 py-2 rounded border">Cancelar</button>
+                        <button type="submit" class="px-3 py-2 rounded bg-gafraBlue text-white">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        </main>
+
+        
+</body>
+</html>

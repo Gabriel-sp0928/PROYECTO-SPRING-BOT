@@ -1,0 +1,48 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<head>
+  <title>Cotizaciones - Industria Gafra</title>
+</head>
+<body>
+  <div layout:fragment="content">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold">Cotizaciones</h1>
+        <p class="text-sm text-[#9aa4ad]">Lista de cotizaciones</p>
+      </div>
+      <div>
+        <a href="/quotes/new" class="btn-outline-light px-4 py-2 rounded-md" sec:authorize="hasAnyRole('ADMIN','LOGISTICS','CLIENT')">Nueva Cotización</a>
+      </div>
+    </div>
+
+    <div class="card-modern p-4" th:classappend="${currentUserId != null} ? ' transparent-panel' : ''">
+      <table class="min-w-full text-sm">
+        <thead class="text-[#9aa4ad]"><tr><th class="pb-2 text-left">Cliente</th><th class="pb-2 text-left">Fecha</th><th class="pb-2 text-left">Productos</th><th class="pb-2 text-left">Total</th><th class="pb-2 text-left">Estado</th><th class="pb-2 text-right">Acciones</th></tr></thead>
+        <tbody id="quotesTable" class="align-top">
+          <tr th:each="q : ${quotes}" class="border-t border-white/4">
+            <td class="py-3" th:text="${q.user != null ? q.user.name : ''}"></td>
+            <td class="py-3" th:text="${q.date != null ? #temporals.format(q.date, 'yyyy-MM-dd HH:mm') : ''}"></td>
+            <td class="py-3" th:text="${quoteProducts[q.id]}"></td>
+            <td class="py-3" th:text="${q.total}"></td>
+            <td class="py-3"><span class="px-2 py-1 rounded bg-gray-600" th:text="${q.status}"></span></td>
+            <td class="py-3 text-right">
+              <a class="btn-outline-light mr-2" th:href="@{/quotes/{id}(id=${q.id})}"><i class="fa fa-eye"></i></a>
+              <a class="btn-outline-light mr-2" th:href="@{/quotes/{id}/edit(id=${q.id})}" sec:authorize="hasAnyRole('ADMIN','LOGISTICS','CLIENT')"><i class="fa fa-edit"></i></a>
+              <form th:action="@{/quotes/{id}/delete(id=${q.id})}" method="post" style="display:inline" class="confirm-delete" th:attr="data-message=${'Eliminar cotización #' + q.id + '?'}" sec:authorize="hasAnyRole('ADMIN','LOGISTICS','CLIENT')">
+                <button type="submit" class="btn-outline-light text-red-400 mr-2"><i class="fa fa-trash"></i></button>
+              </form>
+              <form th:action="@{/quotes/{id}/approve(id=${q.id})}" method="post" style="display:inline" sec:authorize="hasAnyRole('ADMIN','LOGISTICS')">
+                <button type="submit" class="bg-gradient-to-r from-teal-400 to-cyan-600 text-black px-3 py-1 rounded-md">Convertir</button>
+              </form>
+              <form th:action="@{/quotes/{id}/approve(id=${q.id})}" method="post" style="display:inline" sec:authorize="hasRole('CLIENT')" th:if="${currentUserId != null and q.user != null and q.user.id == currentUserId}">
+                <button type="submit" class="bg-gradient-to-r from-teal-400 to-cyan-600 text-black px-3 py-1 rounded-md">Aprobar</button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+  </body>
+</html>

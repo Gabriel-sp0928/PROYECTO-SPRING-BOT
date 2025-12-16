@@ -1,0 +1,39 @@
+-- Initial schema for Industria Gafra (basic tables used by app)
+
+CREATE TABLE IF NOT EXISTS users (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  username VARCHAR(100) NOT NULL UNIQUE,
+  email VARCHAR(150) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  name VARCHAR(200),
+  role VARCHAR(50),
+  enabled BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE IF NOT EXISTS products (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  price DECIMAL(19,2) DEFAULT 0,
+  stock INT DEFAULT 0,
+  category VARCHAR(150)
+);
+
+CREATE TABLE IF NOT EXISTS quotes (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  user_id BIGINT,
+  status VARCHAR(50),
+  total DECIMAL(19,2) DEFAULT 0,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_quote_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS quote_details (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  quote_id BIGINT,
+  product_id BIGINT,
+  quantity INT DEFAULT 1,
+  unit_price DECIMAL(19,2) DEFAULT 0,
+  CONSTRAINT fk_qd_quote FOREIGN KEY (quote_id) REFERENCES quotes(id) ON DELETE CASCADE,
+  CONSTRAINT fk_qd_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
+);

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="${title} ?: 'Industria Gafra'">Industria Gafra</title>
+        <!-- Tailwind CSS (CDN) -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                darkMode: 'class',
+                theme: { extend: {} }
+            }
+        </script>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- App styles -->
+    <link rel="stylesheet" href="/css/styles.css" />
+        <style>
+            /* When on auth pages, hide the app chrome (navbar/sidebar/footer) */
+            body.auth-page nav.fixed, body.auth-page aside.sidebar, body.auth-page footer, body.auth-page .h-16 { display: none !important; }
+            body.auth-page main { padding-top: 0 !important; margin-top: 0 !important; }
+        </style>
+</head>
+<body class="dark bg-[#0b0f12] text-[#e6eef2]">
+
+<div th:insert="~{navbar :: navbar}"></div>
+<div th:insert="~{sidebar :: sidebar}"></div>
+
+<div id="pageLoader" class="page-loader d-none">
+    <div class="spinner-border text-light" role="status"><span class="visually-hidden">Cargando...</span></div>
+    <div class="loader-text">Cargando...</div>
+</div>
+
+<main class="max-w-7xl mx-auto mt-4 px-4">
+    <div class="flex gap-6">
+        <nav id="appSidebar" class="hidden lg:block w-56">
+            <!-- sidebar inserted via fragment -->
+        </nav>
+        <section class="flex-1">
+            <nav aria-label="breadcrumb">
+                <ol class="flex items-center gap-2 text-sm text-[#9aa4ad] mb-3">
+                    <li><a href="/dashboard" class="text-[#9aa4ad] hover:underline">Dashboard</a></li>
+                    <li class="text-[#6b7280]">/</li>
+                    <li class="font-semibold" th:text="${page} ?: ''"></li>
+                </ol>
+            </nav>
+            <div layout:fragment="content"></div>
+        </section>
+    </div>
+</main>
+
+<div th:insert="~{footer :: footer}"></div>
+
+<!-- Toast container -->
+<div class="fixed bottom-4 right-4 z-50 space-y-2">
+    <div id="toastContainer"></div>
+    <div id="tooltipContainer"></div>
+    <div id="modalContainer"></div>
+</div>
+
+<!-- Scripts -->
+<script src="/js/app.js"></script>
+    <script src="/js/pages.js"></script>
+
+<!-- Dashboard initializer: runs after app.js so `apiFetch` is available -->
+    <script>
+    (function onReady(fn){ if(document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); })(async function(){
+        // detect dashboard presence by any known counter id
+        if(!document.getElementById('productsCount') && !document.getElementById('statProducts')) return;
+        try{
+            const products = await apiFetch('/api/products');
+            const users    = await apiFetch('/api/users');
+            const quotes   = await apiFetch('/api/quotes');
+            const sales    = await apiFetch('/api/sales');
+
+            const setIf = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
+            const len = (v) => (v && v.length) ? v.length : 0;
+
+            setIf('productsCount', len(products)); setIf('statProducts', len(products));
+            setIf('usersCount', len(users));       setIf('statUsers', len(users));
+            setIf('quotesCount', len(quotes));     setIf('statQuotes', len(quotes));
+            setIf('salesCount', len(sales));       setIf('statSales', len(sales));
+
+            // initialize charts if available
+            if(window.renderDashboardCharts) window.renderDashboardCharts(products, users, quotes, sales);
+        }catch(e){ console.error('Dashboard load failed', e); }
+    });
+</script>
+
+</body>
+</html>

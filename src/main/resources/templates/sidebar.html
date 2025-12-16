@@ -1,0 +1,53 @@
+<!doctype html>
+<div th:fragment="sidebar">
+  <aside class="sidebar glass text-white/90 vh-100 fixed hidden lg:flex flex-col p-4 rounded-lg w-56">
+    <div class="flex items-center gap-3 mb-6">
+      <img src="/images/logo.svg" alt="Logo" class="h-9"/>
+      <div>
+        <div class="font-semibold">Industria Gafra</div>
+        <div class="text-xs text-[#9aa4ad]">Versión 0.0.1</div>
+      </div>
+    </div>
+
+    <nav class="flex-1">
+      <div class="mb-3 text-sm text-[#9aa4ad] uppercase tracking-wide">Módulos</div>
+      <ul class="space-y-1">
+        <li>
+          <a href="/dashboard" class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/5" sec:authorize="isAuthenticated()">
+            <i class="fa fa-home w-5"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="/products" class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/5" sec:authorize="hasAnyRole('ADMIN','CLIENT')">
+            <i class="fa fa-box-open w-5"></i>
+            <span>Productos</span>
+          </a>
+        </li>
+        <li>
+          <a href="/quotes" class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/5" sec:authorize="hasAnyRole('ADMIN','LOGISTICS','CLIENT')">
+            <i class="fa fa-file-invoice-dollar w-5"></i>
+            <span>Cotizaciones</span>
+          </a>
+        </li>
+        <li>
+          <a href="/sales" class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/5" sec:authorize="hasAnyRole('ADMIN','LOGISTICS','CLIENT')">
+            <i class="fa fa-receipt w-5"></i>
+            <span>Ventas</span>
+          </a>
+        </li>
+        <li>
+          <a href="/users" class="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-white/5" sec:authorize="hasRole('ADMIN')">
+            <i class="fa fa-users w-5"></i>
+            <span>Usuarios</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="mt-4">
+      <a href="/settings" class="text-sm flex items-center gap-2 text-[#9aa4ad] hover:text-white"><i class="fa fa-cog"></i> Configuración</a>
+      <div class="text-xs text-[#8b949e] mt-3">Soporte • <a href="#" class="underline">Contactar</a></div>
+    </div>
+  </aside>
+</div>

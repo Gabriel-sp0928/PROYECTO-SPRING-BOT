@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Usuario - Formulario</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1 class="text-2xl font-bold mb-4" id="title" th:text="${user.id} == null ? 'Nuevo usuario' : 'Editar usuario #' + ${user.id}">Nuevo usuario</h1>
+
+    <div class="bg-[#071018] shadow rounded-md p-6 max-w-lg glass">
+        <form th:action="@{/users/save}" th:object="${user}" method="post" class="grid grid-cols-1 gap-4">
+            <input type="hidden" th:field="*{id}" />
+            <div>
+                <label class="block text-sm font-medium">Nombre</label>
+                <input th:field="*{name}" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Usuario</label>
+                <input th:field="*{username}" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Email</label>
+                <input th:field="*{email}" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Contraseña</label>
+                <input th:field="*{password}" type="password" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Rol</label>
+                <select th:field="*{role}" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent">
+                    <option th:value="${T(com.industriagafra.entity.Role).CLIENT}">CLIENT</option>
+                    <option th:value="${T(com.industriagafra.entity.Role).LOGISTICS}">LOGISTICS</option>
+                    <option th:value="${T(com.industriagafra.entity.Role).ADMIN}">ADMIN</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Documento</label>
+                <input th:field="*{documentNumber}" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Dirección</label>
+                <input th:field="*{address}" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Método de pago</label>
+                <input th:field="*{paymentMethod}" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+            </div>
+            <div class="flex items-center gap-4">
+                <label class="flex items-center gap-2"><input th:field="*{enabled}" type="checkbox" /> Activo</label>
+            </div>
+            <div class="pt-4">
+                <button type="submit" class="bg-gradient-to-r from-teal-400 to-cyan-600 text-black px-4 py-2 rounded">Guardar</button>
+                <a href="/users" class="ml-3 btn-outline-light px-4 py-2 rounded-md">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

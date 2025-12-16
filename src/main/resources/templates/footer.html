@@ -1,0 +1,12 @@
+<!doctype html>
+<div th:fragment="footer">
+    <footer class="mt-8 py-6">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between text-sm text-[#9aa4ad]">
+            <div>© <span th:text="${#dates.format(#dates.createNow(),'yyyy')}">2025</span> Industria Gafra</div>
+            <div class="flex gap-4">
+                <a href="#" class="hover:underline"><i class="fa fa-question-circle"></i> Ayuda</a>
+                <a href="#" class="hover:underline"><i class="fa fa-cog"></i> Configuración</a>
+            </div>
+        </div>
+    </footer>
+</div>

@@ -1,10 +1,10 @@
-package com.demo.demo;
+package com.industriagafra;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class IndustriaGafraApplicationTests {
 
 	@Test
 	void contextLoads() {

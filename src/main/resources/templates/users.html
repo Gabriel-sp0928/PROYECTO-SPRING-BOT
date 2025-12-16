@@ -1,0 +1,53 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+  <title>Usuarios - Industria Gafra</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  </head>
+<body>
+<div layout:fragment="content">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">Usuarios</h1>
+      <p class="text-sm text-[#9aa4ad]">Gestiona los usuarios del sistema</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="/users/new" class="btn-outline-light px-4 py-2 rounded-md">Nuevo usuario</a>
+    </div>
+  </div>
+
+  <div class="card-modern p-4">
+    <table class="min-w-full text-sm">
+      <thead class="text-[#9aa4ad]">
+      <tr>
+        <th class="pb-2 text-left">Nombre</th>
+        <th class="pb-2 text-left">Usuario</th>
+        <th class="pb-2 text-left">Rol</th>
+        <th class="pb-2 text-left">Estado</th>
+        <th class="pb-2 text-right">Acciones</th>
+      </tr>
+      </thead>
+      <tbody id="usersBody" class="align-top">
+        <tr th:each="u : ${users}" class="border-t border-white/4">
+          <td class="py-3" th:text="${u.name}"></td>
+          <td class="py-3" th:text="${u.username}"></td>
+          <td class="py-3"><span class="px-2 py-1 rounded" th:text="${u.role}"></span></td>
+          <td class="py-3">
+            <span th:if="${u.enabled}" class="px-2 py-1 rounded bg-green-600 text-black">Activo</span>
+            <span th:unless="${u.enabled}" class="px-2 py-1 rounded bg-gray-600">Inactivo</span>
+          </td>
+            <td class="py-3 text-right">
+            <a class="btn-outline-light mr-2" th:href="@{/users/{id}/edit(id=${u.id})}"><i class="fa fa-edit"></i></a>
+            <form th:action="@{/users/{id}/delete(id=${u.id})}" method="post" style="display:inline" class="confirm-delete" th:attr="data-message=${'Eliminar usuario #' + u.id + '?'}">
+              <!-- CSRF token removed: app uses JWT -->
+              <button type="submit" class="btn-outline-light text-red-400"><i class="fa fa-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+</html>

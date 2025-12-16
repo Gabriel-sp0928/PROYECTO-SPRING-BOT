@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<head>
+    <title>Registro - Industria Gafra</title>
+</head>
+<body>
+    <div layout:fragment="content" id="registerPage" class="flex items-center justify-center min-h-screen">
+        <script>document.body.classList.add('auth-page');</script>
+        <div class="w-full max-w-lg bg-[#071018]/70 backdrop-blur-md border border-white/5 rounded-lg p-6 text-[#e6eef2]">
+            <h2 class="text-center text-2xl font-bold mb-4">Registro de Usuario</h2>
+            <form th:action="@{/users/save}" method="post" id="registerForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Usuario</label>
+                    <input id="username" name="username" type="text" required class="mt-1 block w-full border border-white/10 bg-transparent rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gafraYellow" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                    <input id="email" name="email" type="email" required class="mt-1 block w-full border border-white/10 bg-transparent rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gafraYellow" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Nombre</label>
+                    <input id="name" name="name" type="text" required class="mt-1 block w-full border border-white/10 bg-transparent rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gafraYellow" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+                    <input id="password" name="password" type="password" required class="mt-1 block w-full border border-white/10 bg-transparent rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gafraYellow" />
+                </div>
+                <input type="hidden" name="role" value="CLIENT" />
+                <button type="submit" class="w-full bg-gafraYellow text-black font-semibold py-2 rounded transition-colors hover:bg-sky-300">Registrarse</button>
+            </form>
+            <p class="text-center text-sm mt-4">¿Ya tienes cuenta? <a href="/login" class="text-gafraBlue font-medium">Inicia sesión</a></p>
+        </div>
+    </div>
+
+    <!-- Registration handler migrated to /js/pages.js -->
+</body>
+</html>

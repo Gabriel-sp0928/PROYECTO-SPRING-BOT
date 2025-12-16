@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Producto - Formulario</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h1 class="text-2xl font-bold mb-4" id="title" th:text="${product.id} == null ? 'Nuevo producto' : 'Editar producto #' + ${product.id}">Nuevo producto</h1>
+
+    <div class="bg-[#071018] shadow rounded-md p-6 max-w-lg glass">
+        <form th:action="@{/products/save}" th:object="${product}" method="post" class="grid grid-cols-1 gap-4">
+            <input th:field="*{id}" type="hidden" />
+            <div>
+                <label class="block text-sm font-medium">Nombre</label>
+                <input th:field="*{name}" th:disabled="${readonly}" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Descripción</label>
+                <textarea th:field="*{description}" th:disabled="${readonly}" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent"></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Precio</label>
+                <input th:field="*{price}" type="number" step="0.01" th:disabled="${readonly}" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Stock</label>
+                <input th:field="*{stock}" type="number" step="1" min="0" inputmode="numeric" pattern="[0-9]*" th:disabled="${readonly}" oninput="this.value=this.value.replace(/[^0-9]/g,'')" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium">Categoría</label>
+                <input th:field="*{category}" th:disabled="${readonly}" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+            </div>
+            <div class="flex items-center gap-3">
+                <button th:if="${readonly != true}" type="submit" class="bg-gradient-to-r from-teal-400 to-cyan-600 text-black px-4 py-2 rounded-md">Guardar</button>
+                <a href="/products" class="ml-3 btn-outline-light px-4 py-2 rounded-md">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- server-side form: actions handled by /products/save -->
+
+</body>
+</html>

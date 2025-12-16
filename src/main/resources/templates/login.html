@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<head>
+    <title>Login - Industria Gafra</title>
+</head>
+<body>
+  <div layout:fragment="content" id="loginPage" class="flex items-center justify-center min-h-screen">
+    <script>document.body.classList.add('auth-page');</script>
+    <div class="w-full max-w-md bg-[#071018]/70 backdrop-blur-md border border-white/5 rounded-lg p-6 text-[#e6eef2]">
+      <h2 class="text-center text-2xl font-bold mb-4">Iniciar Sesión</h2>
+      <form th:action="@{/login}" method="post" id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-[#9aa4ad]">Usuario</label>
+          <input name="username" id="username" type="text" required class="mt-1 block w-full border border-white/10 bg-transparent rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gafraYellow" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-[#9aa4ad]">Contraseña</label>
+          <input name="password" id="password" type="password" required class="mt-1 block w-full border border-white/10 bg-transparent rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gafraYellow" />
+        </div>
+        <button type="submit" class="w-full bg-gafraYellow text-black font-semibold py-2 rounded transition-colors hover:bg-sky-300">Iniciar Sesión</button>
+      </form>
+      <p class="text-center text-sm mt-4">¿No tienes cuenta? <a href="/register" class="text-gafraBlue font-medium">Regístrate</a></p>
+    </div>
+  </div>
+
+  <!-- Login handler migrated to /js/pages.js -->
+</body>
+</html>

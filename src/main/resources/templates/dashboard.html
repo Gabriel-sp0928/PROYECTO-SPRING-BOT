@@ -1,0 +1,115 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<head>
+  <title>Dashboard - Industria Gafra</title>
+</head>
+<body>
+<div layout:fragment="content">
+  <!-- Stats grid (visible solo para ADMIN) -->
+  <div sec:authorize="hasRole('ADMIN')">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="glass p-4 rounded-lg flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-md" style="background:rgba(14,165,164,0.08)"><i class="fa fa-box fa-2x" style="color:var(--accent)"></i></div>
+        <div>
+          <div class="text-sm text-[#9aa4ad]">Productos</div>
+          <h3 class="text-lg font-semibold" id="productsCount" th:text="${productsCount}">0</h3>
+        </div>
+      </div>
+      <a href="/reports/products?format=xlsx" target="_blank" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-sm">Reportes</a>
+    </div>
+
+    <div class="glass p-4 rounded-lg flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-md" style="background:rgba(124,58,237,0.06)"><i class="fa fa-receipt fa-2x" style="color:#7c3aed"></i></div>
+        <div>
+          <div class="text-sm text-[#9aa4ad]">Ventas</div>
+          <h3 class="text-lg font-semibold" id="salesCount" th:text="${salesCount}">0</h3>
+          <div class="text-xs text-[#9aa4ad]">Mes: <span th:text="${monthlySales}">0.00</span></div>
+        </div>
+      </div>
+      <a href="/reports/sales?format=xlsx" target="_blank" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-sm">Reportes</a>
+    </div>
+
+    <div class="glass p-4 rounded-lg flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-md" style="background:rgba(245,158,11,0.06)"><i class="fa fa-file-invoice fa-2x" style="color:#f59e0b"></i></div>
+        <div>
+          <div class="text-sm text-[#9aa4ad]">Cotizaciones</div>
+          <h3 class="text-lg font-semibold" id="quotesCount" th:text="${quotesCount}">0</h3>
+          <div class="text-xs text-[#9aa4ad]">Aprobadas: <span th:text="${approvedQuotes}">0</span> • Rechazadas: <span th:text="${rejectedQuotes}">0</span></div>
+        </div>
+      </div>
+      <a href="/reports/quotes?format=xlsx" target="_blank" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-sm">Reportes</a>
+    </div>
+
+    <div class="glass p-4 rounded-lg flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="p-3 rounded-md" style="background:rgba(2,132,199,0.06)"><i class="fa fa-users fa-2x" style="color:#0284c7"></i></div>
+        <div>
+          <div class="text-sm text-[#9aa4ad]">Usuarios activos</div>
+          <h3 class="text-lg font-semibold" id="usersCount" th:text="${usersCount}">0</h3>
+          <div class="text-xs text-[#9aa4ad]">Clientes: <span th:text="${totalClients}">0</span></div>
+        </div>
+      </div>
+      <a href="/reports/users?format=xlsx" target="_blank" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-sm">Reportes</a>
+    </div>
+    </div>
+  </div>
+
+  <!-- Cliente: mensaje y accesos rápidos -->
+  <div sec:authorize="hasRole('CLIENT')">
+    <div class="glass p-6 rounded-lg mb-6 max-w-3xl mx-auto text-center">
+      <h2 class="text-2xl font-semibold mb-2">Bienvenido a tu panel</h2>
+      <p class="text-sm text-[#9aa4ad] mb-4">Aquí puedes ver tus cotizaciones y ventas, y consultar los productos disponibles.</p>
+      <div class="flex flex-col sm:flex-row justify-center gap-3">
+        <a href="/products" class="quick-btn px-4 py-2 rounded bg-transparent border border-white/6 hover:bg-white/2"><i class="fa fa-box"></i><span>Ver productos</span></a>
+        <a href="/quotes/new" class="quick-btn px-4 py-2 rounded bg-transparent border border-white/6 hover:bg-white/2"><i class="fa fa-plus-square"></i><span>Crear cotización</span></a>
+        <a href="/quotes" class="quick-btn px-4 py-2 rounded bg-transparent border border-white/6 hover:bg-white/2"><i class="fa fa-file-invoice"></i><span>Mis cotizaciones</span></a>
+        <a href="/sales" class="quick-btn px-4 py-2 rounded bg-transparent border border-white/6 hover:bg-white/2"><i class="fa fa-receipt"></i><span>Mis ventas</span></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logística: aviso (solo ver ventas y cotizaciones; productos CRUD) -->
+  <div sec:authorize="hasRole('LOGISTICS')">
+    <div class="glass p-6 rounded-lg mb-6 max-w-3xl mx-auto text-center">
+      <h2 class="text-2xl font-semibold mb-2">Panel Logístico</h2>
+      <p class="text-sm text-[#9aa4ad] mb-4">Tienes acceso completo a productos. Para cotizaciones y ventas solo dispones de visualización.</p>
+      <div class="flex flex-col sm:flex-row justify-center gap-3">
+        <a href="/products" class="quick-btn px-4 py-2 rounded bg-slate-800 hover:bg-slate-700"><i class="fa fa-box"></i><span>Gestionar productos</span></a>
+        <a href="/quotes" class="quick-btn px-4 py-2 rounded bg-slate-800 hover:bg-slate-700"><i class="fa fa-file-invoice"></i><span>Ver cotizaciones</span></a>
+        <a href="/sales" class="quick-btn px-4 py-2 rounded bg-slate-800 hover:bg-slate-700"><i class="fa fa-receipt"></i><span>Ver ventas</span></a>
+      </div>
+    </div>
+  </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="glass p-4 rounded-lg">
+        <div class="flex justify-between items-center mb-2">
+          <h5 class="mb-0">Ventas mensuales</h5>
+          <small class="text-[#9aa4ad]">Actualizado recientemente</small>
+        </div>
+        <canvas id="salesChart" height="120"></canvas>
+        <div class="mt-4">
+          <canvas id="summaryChart" height="110"></canvas>
+        </div>
+      </div>
+      <div class="glass p-4 rounded-lg">
+        <h5 class="mb-3">Top productos</h5>
+        <ul id="topProducts" class="space-y-2">
+          <li th:each="p : ${bestSellingProducts}">
+            <div class="flex justify-between">
+              <div th:text="${p.name}">Producto</div>
+              <div class="text-sm text-[#9aa4ad]" th:text="${p.count}">0</div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Dashboard data is initialized globally in layout.html after app.js -->
+  </div>
+</body>
+</html>

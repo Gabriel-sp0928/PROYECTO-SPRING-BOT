@@ -1,0 +1,38 @@
+<!doctype html>
+<div th:fragment="navbar">
+    <nav class="fixed top-0 left-0 right-0 glass shadow-sm z-40">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-3">
+                    <button id="sidebarToggle" class="lg:hidden p-2 text-[#e6eef2]"><i class="fa fa-bars"></i></button>
+                    <a href="/dashboard" class="flex items-center gap-2">
+                        <img src="/images/logo.svg" alt="logo" class="h-7"/>
+                        <span class="font-semibold">Industria Gafra</span>
+                    </a>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <form th:action="@{/products}" method="get" class="flex items-center gap-2" th:if="${authenticated}">
+                        <input name="q" th:value="${param.q}" placeholder="Buscar productos..." aria-label="Buscar productos" class="search-input text-sm px-3 py-1 rounded-md" />
+                        <button type="submit" class="btn-outline-light px-3 py-1 text-sm" title="Buscar"><i class="fa fa-search"></i></button>
+                    </form>
+                    <button id="themeToggle" class="p-2 btn-outline-light"><i class="fa fa-moon"></i></button>
+
+                    <div class="relative" id="userMenuWrap">
+                        <button id="userMenuBtn" class="flex items-center gap-2 px-3 py-1 rounded-md bg-[#0f1720] text-sm"><i class="fa fa-user-circle"></i>
+                            <span class="hidden sm:inline" sec:authorize="isAuthenticated()" sec:authentication="name">Admin</span>
+                            <span class="hidden sm:inline" sec:authorize="!isAuthenticated()">Invitado</span>
+                        </button>
+                        <div id="userMenu" class="hidden absolute right-0 mt-2 w-44 bg-[#081019] glass rounded-md shadow-lg py-1">
+                            <a href="/profile" class="block px-3 py-2 text-sm hover:bg-white/5" sec:authorize="isAuthenticated()">Perfil</a>
+                            <div class="border-t border-white/5 my-1"></div>
+                            <a sec:authorize="isAuthenticated()" href="/logout" class="block px-3 py-2 text-sm text-white bg-gradient-to-r from-teal-400 to-cyan-600 rounded-md mx-2 text-center">Logout</a>
+                            <a sec:authorize="!isAuthenticated()" href="/login" class="block px-3 py-2 text-sm text-white bg-gradient-to-r from-teal-400 to-cyan-600 rounded-md mx-2 text-center">Login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="h-16"></div>
+</div>

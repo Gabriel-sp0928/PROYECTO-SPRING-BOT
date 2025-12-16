@@ -1,0 +1,64 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layout}">
+<head>
+  <title>Ventas - Industria Gafra</title>
+</head>
+<body>
+  <div layout:fragment="content">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold">Ventas</h1>
+        <p class="text-sm text-[#9aa4ad]">Listado de ventas</p>
+      </div>
+      <div>
+        <button id="newSaleBtn" class="btn-outline-light px-3 py-2 rounded-md" sec:authorize="hasAnyRole('ADMIN','CLIENT')">Nueva Consulta</button>
+      </div>
+    </div>
+
+    <div class="card-modern p-4">
+      <table class="min-w-full text-sm">
+        <thead class="text-[#9aa4ad]"><tr><th class="pb-2 text-left">ID</th><th class="pb-2 text-left">Fecha</th><th class="pb-2 text-left">Cliente</th><th class="pb-2 text-left">Productos</th><th class="pb-2 text-left">Total</th><th class="pb-2 text-right">Acciones</th></tr></thead>
+        <tbody id="salesTable" class="align-top">
+          <tr th:each="s : ${sales}" class="border-t border-white/4">
+            <td class="py-3" th:text="${s.id}"></td>
+            <td class="py-3" th:text="${s.date != null ? #temporals.format(s.date, 'yyyy-MM-dd HH:mm') : ''}"></td>
+            <td class="py-3" th:text="${s.quote != null && s.quote.user != null ? s.quote.user.name : ''}"></td>
+            <td class="py-3" th:text="${saleProducts[s.id]}"></td>
+            <td class="py-3" th:text="${s.total}"></td>
+            <td class="py-3 text-right">
+              <a class="btn-outline-light mr-2" th:href="@{/sales/{id}/edit(id=${s.id})}"><i class="fa fa-eye"></i></a>
+              <button type="button" class="btn-outline-light mr-2 open-sale-btn" th:attr="data-id=${s.id}" sec:authorize="hasAnyRole('ADMIN','CLIENT')"><i class="fa fa-edit"></i></button>
+              <form th:action="@{/sales/{id}/delete(id=${s.id})}" method="post" style="display:inline" class="confirm-delete" th:attr="data-message=${'Eliminar venta #' + s.id + '?'}" sec:authorize="hasAnyRole('ADMIN','CLIENT')">
+                <button type="submit" class="btn-outline-light text-red-400"><i class="fa fa-trash"></i></button>
+              </form>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Sale Modal -->
+    <div id="saleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+      <div class="bg-[#071018] rounded-lg w-full max-w-md p-6 glass">
+        <h3 id="saleModalTitle" class="text-lg font-semibold mb-3">Consulta</h3>
+        <form id="saleForm" class="space-y-3">
+          <input type="hidden" id="s_id" />
+          <div><label class="text-sm">Cotización</label>
+            <select id="s_quoteId" class="w-full bg-transparent border border-white/6 px-3 py-2 rounded-md"></select>
+          </div>
+          <div id="s_products" class="text-sm text-[#9aa4ad]"></div>
+          <div><label class="text-sm">Fecha</label><input id="s_date" type="datetime-local" class="w-full bg-transparent border border-white/6 px-3 py-2 rounded-md"/></div>
+          <div><label class="text-sm">Total</label><input id="s_total" type="number" step="0.01" class="w-full bg-transparent border border-white/6 px-3 py-2 rounded-md"/></div>
+          <div class="flex justify-end gap-3">
+            <button type="button" id="cancelSale" class="btn-outline-light px-3 py-2 rounded-md">Cancelar</button>
+            <button type="submit" id="saveSale" class="bg-gradient-to-r from-teal-400 to-cyan-600 text-black px-4 py-2 rounded-md">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+    <!-- Page scripts migrated to /js/pages.js -->
+
+</body>
+</html>

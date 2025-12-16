@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title th:text="${title} ?: 'Cotización'">Cotización</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div th:if="${error}" class="mb-3 p-3 rounded bg-red-600 text-white">[[${error}]]</div>
+    <div th:if="${success}" class="mb-3 p-3 rounded bg-emerald-500 text-black">[[${success}]]</div>
+    <div class="bg-[#071018] shadow rounded-md p-6 max-w-3xl glass">
+        <form id="quoteForm" th:action="@{/quotes/save}" th:object="${quote}" method="post">
+            <input id="id" th:field="*{id}" type="hidden" />
+            <div class="grid grid-cols-1 gap-4">
+                <div class="flex gap-3 items-end">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium">Producto</label>
+                        <select id="productSelect" class="mt-1 block w-full border px-3 py-2 rounded-md bg-transparent">
+                            <option value="">-- Seleccionar --</option>
+                            <option th:each="p : ${products}" th:value="${p.id}" th:text="${p.name + ' - ' + p.category}" th:data-price="${p.price}"></option>
+                        </select>
+                    </div>
+                    <div class="w-32">
+                        <label class="block text-sm font-medium">Cantidad</label>
+                        <input id="productQty" type="number" min="1" value="1" class="mt-1 block w-full border px-3 py-2 rounded-md bg-transparent" />
+                    </div>
+                    <div>
+                        <button id="addProductBtn" type="button" class="bg-gradient-to-r from-teal-400 to-cyan-600 text-black px-4 py-2 rounded-md">Agregar</button>
+                    </div>
+                </div>
+
+                <div class="card-modern p-3 mt-2 transparent-panel">
+                    <table class="min-w-full text-sm">
+                        <thead class="text-[#9aa4ad]"><tr><th class="text-left">Producto</th><th class="text-center">Cant.</th><th class="text-right">Precio unit.</th><th class="text-right">Subtotal</th><th></th></tr></thead>
+                        <tbody id="detailsBody">
+                            <tr th:each="d,iter : ${details}" class="border-t border-white/6" th:attr="data-product-id=${d.product != null ? d.product.id : ''}">
+                                <td class="py-2">
+                                    <div class="font-medium" th:text="${d.product != null ? d.product.name : ''}"></div>
+                                    <div class="text-xs text-[#9aa4ad]" th:text="${d.product != null ? d.product.description : ''}"></div>
+                                    <input type="hidden" th:name="${'details['+iter.index+'].product.id'}" th:value="${d.product != null ? d.product.id : ''}" data-dynamic-input="1" />
+                                </td>
+                                <td class="py-2 text-center"><input type="number" th:name="${'details['+iter.index+'].quantity'}" min="1" class="row-qty mt-1 block w-20 border px-2 py-1 rounded bg-transparent" th:value="${d.quantity}" /></td>
+                                <td class="py-2 text-right" th:attr="data-price=${d.price}" th:text="${#numbers.formatDecimal(d.price,2,2)}"><input type="hidden" th:name="${'details['+iter.index+'].price'}" th:value="${d.price}" data-dynamic-input="1" /></td>
+                                <td class="py-2 text-right" th:attr="data-subtotal=${d.subtotal}" th:text="${#numbers.formatDecimal(d.subtotal,2,2)}"></td>
+                                <td class="py-2 text-center"><button type="button" class="remove-row text-red-400">Eliminar</button></td>
+                            </tr>
+                            <tr id="noDetailsRow" th:if="${#lists.isEmpty(details)}"><td colspan="5" class="py-2 text-sm text-[#9aa4ad]">No hay productos en la cotización</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pt-3 grid grid-cols-2 gap-4">
+                    <div class="text-sm text-[#9aa4ad]">Subtotal: <span id="subtotalDisplay" th:text="${#numbers.formatDecimal(subtotal,2,2)}">0.00</span></div>
+                    <div></div>
+                    <div>
+                        <label class="block text-sm font-medium">Descuento (valor o %)</label>
+                        <input id="discount" th:field="*{discount}" type="number" step="0.01" th:disabled="${readonly}" placeholder="ej. 10 o 5% -> 5" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+                        <div class="text-xs text-[#9aa4ad] mt-1">Descuento calculado: <span id="discountDisplay">0.00</span></div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium">Impuesto (%)</label>
+                        <input id="tax" th:field="*{tax}" type="number" step="0.01" th:disabled="${readonly}" placeholder="ej. 18" class="mt-1 block w-full border border-white/6 px-3 py-2 rounded-md bg-transparent" />
+                        <div class="text-xs text-[#9aa4ad] mt-1">Impuesto calculado: <span id="taxDisplay">0.00</span></div>
+                    </div>
+                    <div class="pt-2 text-sm text-[#9aa4ad]">Total calculado: <span id="totalDisplay" th:text="${#numbers.formatDecimal(totalComputed,2,2)}">0.00</span></div>
+                </div>
+
+                <div class="pt-4">
+                    <button th:if="${readonly != true}" type="submit" class="bg-gradient-to-r from-teal-400 to-cyan-600 text-black px-4 py-2 rounded">Guardar</button>
+                    <a href="/quotes" class="ml-3 btn-outline-light px-4 py-2 rounded-md">Cancelar</a>
+                    <form th:if="${quote.id != null and quote.status.name() == 'PENDING'}" th:action="@{/quotes/{id}/approve(id=${quote.id})}" method="post" style="display:inline;">
+                        <button type="submit" class="ml-3 bg-amber-400 px-4 py-2 rounded-md text-black">Aprobar</button>
+                    </form>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const form = document.getElementById('quoteForm');
+    const addBtn = document.getElementById('addProductBtn');
+    const select = document.getElementById('productSelect');
+    const qtyInput = document.getElementById('productQty');
+    const body = document.getElementById('detailsBody');
+    const noDetails = document.getElementById('noDetailsRow');
+    const subtotalDisplay = document.getElementById('subtotalDisplay');
+    const totalDisplay = document.getElementById('totalDisplay');
+    const discEl = document.getElementById('discount');
+    const taxEl = document.getElementById('tax');
+
+    function parseNumber(v){ const n = parseFloat(String(v).replace(/[^0-9.-]+/g,'')); return isNaN(n)?0:n }
+
+    function recalcTotals(){
+        let subtotal = 0;
+        body.querySelectorAll('tr').forEach(r => {
+            const priceAttr = r.querySelector('[data-price]')?.getAttribute('data-price');
+            const priceText = priceAttr || r.querySelector('td:nth-child(3)')?.textContent || '0';
+            const price = parseNumber(priceText);
+            const qtyInputEl = r.querySelector('.row-qty');
+            const qty = qtyInputEl ? parseInt(qtyInputEl.value || '0') : parseInt(r.querySelector('td:nth-child(2)')?.textContent || '0');
+            const rowSubtotal = price * (isNaN(qty)?0:qty);
+            const subtotalCell = r.querySelector('[data-subtotal]');
+            if(subtotalCell){
+                subtotalCell.setAttribute('data-subtotal', rowSubtotal);
+                subtotalCell.textContent = rowSubtotal.toFixed(2);
+            }
+            subtotal += rowSubtotal;
+        });
+
+        // interpret discount as percent if value between 0 and 100, otherwise as absolute amount
+        const discountInput = parseNumber(discEl?.value || 0);
+        let discountAmount = 0;
+        if(discountInput !== 0){
+            if(discountInput > 0 && discountInput <= 100){
+                discountAmount = subtotal * (discountInput/100);
+            } else {
+                discountAmount = discountInput;
+            }
+        }
+
+        // interpret tax as percentage when value looks like percent (<=100)
+        const taxInput = parseNumber(taxEl?.value || 0);
+        let taxAmount = 0;
+        if(taxInput !== 0){
+            if(taxInput > 0 && taxInput <= 100){
+                taxAmount = subtotal * (taxInput/100);
+            } else {
+                taxAmount = taxInput;
+            }
+        }
+
+        const total = subtotal - discountAmount + taxAmount;
+        if(subtotalDisplay) subtotalDisplay.textContent = subtotal.toFixed(2);
+        const discountDisplay = document.getElementById('discountDisplay');
+        const taxDisplay = document.getElementById('taxDisplay');
+        if(discountDisplay) discountDisplay.textContent = discountAmount.toFixed(2);
+        if(taxDisplay) taxDisplay.textContent = taxAmount.toFixed(2);
+        if(totalDisplay) totalDisplay.textContent = total.toFixed(2);
+    }
+
+    function removeDynamicInputs(){ form.querySelectorAll('input[data-dynamic-input]').forEach(n=>n.remove()); }
+
+    function attachRowHandlers(tr){
+        const qtyEl = tr.querySelector('.row-qty');
+        if(qtyEl){ qtyEl.addEventListener('input', recalcTotals); }
+        const rem = tr.querySelector('.remove-row');
+        if(rem){ rem.addEventListener('click', ()=>{
+            tr.remove();
+            // if there are no detail rows left, insert a placeholder row
+            if(!body.querySelector('tr')){
+                let placeholder = body.querySelector('#noDetailsRow');
+                if(!placeholder){
+                    placeholder = document.createElement('tr');
+                    placeholder.id = 'noDetailsRow';
+                    placeholder.innerHTML = '<td colspan="5" class="py-2 text-sm text-[#9aa4ad]">No hay productos en la cotización</td>';
+                }
+                body.appendChild(placeholder);
+            }
+            recalcTotals();
+        }); }
+    }
+
+    // attach handlers to existing server rows
+    body.querySelectorAll('tr').forEach(r => { attachRowHandlers(r); });
+
+    if(addBtn && select && qtyInput && body){
+        addBtn.addEventListener('click', () => {
+            const productId = select.value;
+            if(!productId) return;
+            const option = select.querySelector('option[value="'+productId+'"]');
+            const name = option ? option.textContent : 'Producto';
+            const price = parseNumber(option?.dataset?.price || 0);
+            const qty = Math.max(1, parseInt(qtyInput.value) || 1);
+            const subtotal = price * qty;
+            const placeholderRow = body.querySelector('#noDetailsRow');
+            if(placeholderRow) placeholderRow.remove();
+            const tr = document.createElement('tr');
+            tr.className = 'border-t border-white/6';
+            tr.setAttribute('data-product-id', productId);
+            tr.innerHTML = `
+                <td class="py-2"><div class="font-medium">${name}</div></td>
+                <td class="py-2 text-center"><input type="number" min="1" value="${qty}" class="row-qty mt-1 block w-20 border px-2 py-1 rounded bg-transparent" /></td>
+                <td class="py-2 text-right" data-price="${price}">${price.toFixed(2)}</td>
+                <td class="py-2 text-right" data-subtotal="${subtotal}">${subtotal.toFixed(2)}</td>
+                <td class="py-2 text-center"><button type="button" class="remove-row text-red-400">Eliminar</button></td>
+            `;
+            body.appendChild(tr);
+            // animate and scroll new row into view
+            tr.classList.add('fade-in');
+            attachRowHandlers(tr);
+            recalcTotals();
+            tr.scrollIntoView({behavior:'smooth', block:'end'});
+        });
+    }
+
+    if(form){
+        form.addEventListener('submit', function(e){
+            removeDynamicInputs();
+            const rows = Array.from(body.querySelectorAll('tr'));
+            let idx = 0;
+            rows.forEach(r => {
+                const ds = r.querySelector('[data-subtotal]');
+                if(!ds) return;
+                const productId = r.getAttribute('data-product-id');
+                if(!productId) return;
+                const qty = r.querySelector('.row-qty')?.value?.trim() || r.querySelector('td:nth-child(2)')?.textContent?.trim() || '1';
+                const priceText = r.querySelector('[data-price]')?.getAttribute('data-price') || r.querySelector('td:nth-child(3)')?.textContent?.trim() || '0';
+                const price = parseNumber(priceText);
+                const inpPid = document.createElement('input'); inpPid.type='hidden'; inpPid.name=`details[${idx}].product.id`; inpPid.value=productId; inpPid.setAttribute('data-dynamic-input','1'); form.appendChild(inpPid);
+                // only create a hidden quantity input if there's no visible input with a name (to avoid duplicates)
+                const visibleQty = r.querySelector('.row-qty');
+                if(!visibleQty || !visibleQty.name){
+                    const inpQty = document.createElement('input'); inpQty.type='hidden'; inpQty.name=`details[${idx}].quantity`; inpQty.value=qty; inpQty.setAttribute('data-dynamic-input','1'); form.appendChild(inpQty);
+                }
+                const inpPrice = document.createElement('input'); inpPrice.type='hidden'; inpPrice.name=`details[${idx}].price`; inpPrice.value=price; inpPrice.setAttribute('data-dynamic-input','1'); form.appendChild(inpPrice);
+                idx++;
+            });
+        });
+    }
+
+    if(discEl) discEl.addEventListener('input', recalcTotals);
+    if(taxEl) taxEl.addEventListener('input', recalcTotals);
+    recalcTotals();
+});
+</script>
+
+</body>
+</html>
